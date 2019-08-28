@@ -1,4 +1,4 @@
-import { Component, ViewChild, Inject, LOCALE_ID } from '@angular/core';
+import { Component, Inject, LOCALE_ID, OnInit, ViewChild } from '@angular/core';
 import { CalendarComponent } from 'ionic2-calendar/calendar';
 import { AlertController } from '@ionic/angular';
 import { formatDate } from '@angular/common';
@@ -8,7 +8,7 @@ import { formatDate } from '@angular/common';
   templateUrl: 'home.page.html',
   styleUrls: ['home.page.scss'],
 })
-export class HomePage {
+export class HomePage implements OnInit{
 
   event = {
     title: '',
@@ -30,7 +30,7 @@ export class HomePage {
 
   viewTitle = '';
 
-  @ViewChild(CalendarComponent) myCal: CalendarComponent;
+  @ViewChild(CalendarComponent, {static: false}) myCal: CalendarComponent;
 
 
   ngOnInit() {
