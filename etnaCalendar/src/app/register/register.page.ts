@@ -3,6 +3,8 @@ import { AngularFireAuth } from '@angular/fire/auth';
 import { auth } from 'firebase/app';
 import { AlertController } from '@ionic/angular';
 import { Router } from '@angular/router';
+import { AngularFirestore } from '@angular/fire/firestore';
+import { UserService } from '../user.service';
 
 @Component({
   selector: 'app-register',
@@ -15,7 +17,12 @@ username = '';
 password = '';
 cpassword = '';
 
-  constructor(public afAuth: AngularFireAuth, public alert: AlertController, public router: Router) { }
+  constructor(public afAuth: AngularFireAuth,
+              public afstore: AngularFirestore,
+              public alert: AlertController,
+              public user: UserService,
+              public router: Router
+    ) { }
 
   ngOnInit() {
   }
@@ -27,10 +34,16 @@ cpassword = '';
       return console.log('Passwords don\'t match');
     }
     try {
-    const res = await this.afAuth.auth.createUserWithEmailAndPassword(username + '@pomail.com', password);
-    console.log(res);
-    this.showAlert('Success!', 'Welcome aboard');
-    this.router.navigate(['/tabs']);
+      const res = await this.afAuth.auth.createUserWithEmailAndPassword(username + '@gmail.com', password);
+      this.afstore.doc(`users/${res.user.uid}`).set({
+        username
+      });
+      this.user.setUser({
+        username,
+        uid: res.user.uid
+      });
+      this.showAlert('Success!', 'Welcome aboard');
+      this.router.navigate(['/calendar']);
     } catch (error) {
       console.dir(error);
       this.showAlert('Error', error.message);
