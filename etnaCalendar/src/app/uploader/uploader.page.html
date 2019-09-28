@@ -4,11 +4,20 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content>
-  <div class="camera">
+<ion-content padding>
+  <app-loading *ngIf="busy"></app-loading>
+  <div class="center">
+      <div class="camera">
 
   </div>
   
   <input type="file" (change)="fileChanged($event)"/>
-  <img *ngIf="imageURL" src="https://ucarecdn.com/{{ imageURL }}/" />
+  <ion-card *ngIf="imageURL">
+    <img src="https://ucarecdn.com/{{ imageURL }}/" />
+    <ion-card-content>
+      <ion-button shape="round" color="primary" (click)="changeProfilePic()">Change Profile Pic</ion-button>
+    </ion-card-content>
+  </ion-card>
+</div>
+
 </ion-content>

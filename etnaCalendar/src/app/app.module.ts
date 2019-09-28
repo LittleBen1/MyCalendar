@@ -16,6 +16,8 @@ import { UserService } from './user.service';
 import { AngularFirestoreModule } from '@angular/fire/firestore';
 import { AuthService } from './auth.service';
 import { HttpClientModule } from '@angular/common/http';
+import { ShareModule } from './share.module';
+import { CalendarService } from './calendar.service';
 
 @NgModule({
   declarations: [AppComponent],
@@ -26,14 +28,16 @@ import { HttpClientModule } from '@angular/common/http';
      AngularFireModule.initializeApp(config),
      AngularFireAuthModule,
      AngularFirestoreModule,
-     HttpClientModule
+     HttpClientModule,
+     ShareModule
     ],
   providers: [
     StatusBar,
     SplashScreen,
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
     UserService,
-    AuthService
+    AuthService,
+    CalendarService
   ],
   bootstrap: [AppComponent]
 })

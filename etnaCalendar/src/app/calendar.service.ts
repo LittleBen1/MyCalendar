@@ -1,4 +1,6 @@
 import { Injectable } from '@angular/core';
+import { AngularFirestore } from '@angular/fire/firestore';
+import { UserService } from './user.service';
 
 // tslint:disable-next-line: class-name
 interface Calendar {
@@ -6,15 +8,24 @@ interface Calendar {
     cId: string;
 }
 
+interface Event {
+    
+}
+
 @Injectable()
 export class CalendarService {
     private calendar: Calendar;
-    constructor() {
+    constructor(public afstore: AngularFirestore,
+                public user: UserService) {
 
     }
 
-    getEvents(){
-        return this.calendar.events;
+    getEvents() {
+        return this.afstore.collection(`users/${this.user.getUID()}/events`).snapshotChanges();
+    }
+
+    updateCalendarEvent(data) {
+        return null;
     }
 
     addEvent(event) {

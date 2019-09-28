@@ -5,6 +5,7 @@ import { formatDate } from '@angular/common';
 import { AngularFirestore } from '@angular/fire/firestore';
 import { UserService } from '../user.service';
 import { firestore } from 'firebase/app';
+import { CalendarService } from '../calendar.service';
 
 @Component({
   selector: 'app-calendar',
@@ -24,7 +25,7 @@ export class CalendarPage implements OnInit {
 
   minDate = new Date().toISOString();
 
-
+  list: event[];
   eventSource = [];
 
   calendar = {
@@ -34,11 +35,38 @@ export class CalendarPage implements OnInit {
 
   viewTitle = '';
 
-  @ViewChild(CalendarComponent, {static: false}) myCal: CalendarComponent;
+  @ViewChild(CalendarComponent, {static: true}) myCal: CalendarComponent;
 
 
   ngOnInit() {
     this.resetEvent();
+  }
+
+  getEventList(): firebase.firestore.CollectionReference {
+    return this.eventListRef;
+  }
+
+  loadEvents() {
+    this.eventService.getEvents().subscribe(res => (this.eventListRef = res.map(item => {
+      return {
+        ...item.payload.doc.data()} as 
+      }
+    })));
+    console.log(this.eventListRef);
+    // let getDoc = ref.get().toPromise()
+    // .then(doc => {
+    //   if (!doc.exists) {
+    //     console.log('No Such Document');
+    //   }
+    //   else {
+    //     console.log('Document data: ', doc.data());
+    //   }
+    // }).catch(err => {
+    //   console.log('Error getting document ', err);
+    // });
+    //  //this.eventSource.push(eventCopy);
+    // // this.myCal.loadEvents();
+    // this.resetEvent();
   }
 
   resetEvent() {
@@ -86,14 +114,12 @@ export class CalendarPage implements OnInit {
     this.createPost(eventCopy);
     this.myCal.loadEvents();
     this.resetEvent();
+    this.loadEvents();
   }
 
   createPost(eventcopy) {
-    this.afstore.doc(`users/${this.user.getUID()}/`).update({
-      events: firestore.FieldValue.arrayUnion({
-        eventcopy
-      })
-    });
+    const ref = this.afstore.collection(`users/${this.user.getUID()}/event/`);
+    ref.add(eventcopy);
   }
 
   changeMode(mode) {
@@ -128,6 +154,11 @@ export class CalendarPage implements OnInit {
   constructor(private alertCtrl: AlertController,
               @Inject(LOCALE_ID) private locale: string,
               public afstore: AngularFirestore,
-              public user: UserService) {}
-
+              public user: UserService, public eventService: CalendarService) {
+              // if (user) {
+              //   this.eventListRef = this.afstore.collection<any>(`users/${this.user.getUID()}/event/`);
+              //   console.log(this.eventListRef);
+              //   this.eventSource = this.eventListRef;
+              //   debugger;
+              }
 }

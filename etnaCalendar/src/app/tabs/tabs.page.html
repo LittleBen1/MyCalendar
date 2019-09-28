@@ -1,14 +1,22 @@
 <ion-tabs #tabs>
-  <ion-tab-bar slot="bottom">
+    <ion-tab-bar slot="bottom">
+ 
+  
     <ion-tab-button tab="profile">
-      <ion-icon name="contact"></ion-icon>
+      <div *ngIf="user.getProfilePic(); else null">
+        <ion-avatar>
+          <img  src="https://ucarecdn.com/ff1fab4f-3eb0-467d-a55e-6defa780bf73/donald_duck_PNG84.png">
+        </ion-avatar>
+        </div>
+        <ng-template #null>
+          <ion-icon  name="calendar"></ion-icon>
+        </ng-template>
       <ion-label>Profile</ion-label>
     </ion-tab-button>
-  
     <ion-tab-button tab="calendar">
-      <ion-icon name="calendar"></ion-icon>
-      <ion-label>Calendar</ion-label>
-    </ion-tab-button>
+        <ion-icon name="calendar"></ion-icon>
+        <ion-label>Profile</ion-label>
+      </ion-tab-button>
   </ion-tab-bar>  
 
 </ion-tabs>>

@@ -38,9 +38,11 @@ cpassword = '';
       this.afstore.doc(`users/${res.user.uid}`).set({
         username
       });
+        
       this.user.setUser({
         username,
-        uid: res.user.uid
+        uid: res.user.uid,
+        profilePic: res.user.photoURL
       });
       this.showAlert('Success!', 'Welcome aboard');
       this.router.navigate(['/calendar']);

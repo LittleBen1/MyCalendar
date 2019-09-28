@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Router, CanActivate } from '@angular/router';
 import { UserService } from './user.service';
+//import { Firebase } from 'firebase/app';
 
 @Injectable()
 export class AuthService implements CanActivate {
@@ -8,7 +9,7 @@ export class AuthService implements CanActivate {
     constructor(private router: Router, private user: UserService) {
 
     }
-
+    
     async canActivate(route) {
         if (await this.user.isAuthenticated()) {
             return true;

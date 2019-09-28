@@ -6,6 +6,7 @@ import { auth } from 'firebase/app';
 interface User {
     username: string;
     uid: string;
+    profilePic: string;
 }
 
 @Injectable()
@@ -23,15 +24,21 @@ export class UserService {
         if (this.user) { return true; }
 
         const user = await this.afAuth.authState.pipe(first()).toPromise();
-        
+
         if (user) {
+            
             this.setUser({
                 username: user.email.split('@')[0],
-                uid: user.uid
+                uid: user.uid,
+                profilePic: user.uid
             });
             return true;
         }
         return false;
+    }
+
+    getProfilePic() {
+        return this.user.profilePic;
     }
 
     getUsername() {
