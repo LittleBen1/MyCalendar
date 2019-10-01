@@ -19,6 +19,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { ShareModule } from './share.module';
 import { CalendarService } from './calendar.service';
 
+
 @NgModule({
   declarations: [AppComponent],
   entryComponents: [],
@@ -29,7 +30,7 @@ import { CalendarService } from './calendar.service';
      AngularFireAuthModule,
      AngularFirestoreModule,
      HttpClientModule,
-     ShareModule
+     ShareModule,
     ],
   providers: [
     StatusBar,

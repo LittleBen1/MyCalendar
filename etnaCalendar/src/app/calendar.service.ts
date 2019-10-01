@@ -20,8 +20,8 @@ export class CalendarService {
 
     }
 
-    getEvents() {
-        return this.afstore.collection(`users/${this.user.getUID()}/events`).snapshotChanges();
+    async getEvents() {
+        return await this.afstore.collection(`users/${this.user.getUID()}/event`).snapshotChanges();
     }
 
     updateCalendarEvent(data) {

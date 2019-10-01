@@ -1,5 +1,7 @@
 {
   "name": "etnaCalendar",
-  "integrations": {},
+  "integrations": {
+    "cordova": {}
+  },
   "type": "angular"
 }

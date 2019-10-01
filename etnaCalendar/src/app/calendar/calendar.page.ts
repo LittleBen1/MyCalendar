@@ -25,7 +25,7 @@ export class CalendarPage implements OnInit {
 
   minDate = new Date().toISOString();
 
-  list: event[];
+  eventList = [];
   eventSource = [];
 
   calendar = {
@@ -39,20 +39,35 @@ export class CalendarPage implements OnInit {
 
 
   ngOnInit() {
+
+    this.loadEvents();
+  }
+
+
+  // getEventList(): firebase.firestore.CollectionReference {
+  //   return this.eventListRef;
+  // }
+
+  async loadEvents() {
+    (await this.eventService.getEvents()).subscribe(res => (this.eventList = res));
+    console.log(this.eventList);
+    for (const event of this.eventList) {
+      console.log(event.payload.doc.data().startTime.toDate());
+      const eventCopy  = {
+        title: event.payload.doc.data().title,
+        desc: event.payload.doc.data().desc,
+        startTime: new Date(event.payload.doc.data().startTime.toDate()),
+        endTime: new Date(event.payload.doc.data().endTime.toDate()),
+        allDay: event.payload.doc.data().allDay,
+        publicEvent: event.payload.doc.data().publicEvent
+      };
+      this.eventSource.push(eventCopy);
+   
+      // debugger;
+    }
+    this.myCal.loadEvents();
     this.resetEvent();
   }
-
-  getEventList(): firebase.firestore.CollectionReference {
-    return this.eventListRef;
-  }
-
-  loadEvents() {
-    this.eventService.getEvents().subscribe(res => (this.eventListRef = res.map(item => {
-      return {
-        ...item.payload.doc.data()} as 
-      }
-    })));
-    console.log(this.eventListRef);
     // let getDoc = ref.get().toPromise()
     // .then(doc => {
     //   if (!doc.exists) {
@@ -67,7 +82,7 @@ export class CalendarPage implements OnInit {
     //  //this.eventSource.push(eventCopy);
     // // this.myCal.loadEvents();
     // this.resetEvent();
-  }
+
 
   resetEvent() {
     this.event = {
@@ -110,11 +125,16 @@ export class CalendarPage implements OnInit {
       eventCopy.startTime = new Date(Date.UTC(start.getUTCFullYear(), start.getUTCMonth(), start.getUTCDate()));
       eventCopy.endTime = new Date(Date.UTC(end.getUTCFullYear(), end.getUTCMonth(), end.getUTCDate() + 1));
     }
+
     this.eventSource.push(eventCopy);
-    this.createPost(eventCopy);
-    this.myCal.loadEvents();
-    this.resetEvent();
+
     this.loadEvents();
+    this.myCal.loadEvents();
+    this.createPost(eventCopy);
+    this.resetEvent();
+
+    console.log(this.eventSource);
+    //debugger;
   }
 
   createPost(eventcopy) {
@@ -127,12 +147,12 @@ export class CalendarPage implements OnInit {
   }
 
   back() {
-    let swiper = document.querySelector('.swiper-container')['swiper'];
+    const swiper = document.querySelector('.swiper-container')['swiper'];
     swiper.slidePrev();
   }
 
   next() {
-    let swiper = document.querySelector('.swiper-container')['swiper'];
+    const swiper = document.querySelector('.swiper-container')['swiper'];
     swiper.slideNext();
   }
 
@@ -155,10 +175,6 @@ export class CalendarPage implements OnInit {
               @Inject(LOCALE_ID) private locale: string,
               public afstore: AngularFirestore,
               public user: UserService, public eventService: CalendarService) {
-              // if (user) {
-              //   this.eventListRef = this.afstore.collection<any>(`users/${this.user.getUID()}/event/`);
-              //   console.log(this.eventListRef);
-              //   this.eventSource = this.eventListRef;
-              //   debugger;
+              //this.loadEvents();
               }
 }
