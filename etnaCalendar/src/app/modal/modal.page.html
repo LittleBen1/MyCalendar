@@ -1,0 +1,82 @@
+<ion-content>
+    <ng-template [ngIf]="event != null"><div>
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>Update Event</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+        <ion-item>
+        <ion-input type="text" placeholder="Title" [(ngModel)]="event.title"></ion-input>
+      </ion-item>
+      <ion-item>
+          <ion-input type="text" placeholder="Description" [(ngModel)]="event.desc"></ion-input>
+        </ion-item>
+      <ion-item>
+        <ion-label>Start</ion-label>
+        <ion-datetime displayFormat="DD/MM/YYYY HH:mm" pickerFormat="MMM D:HH:mm" [(ngModel)]="event.startTime" [min]="minDate"></ion-datetime>
+      </ion-item>
+      <ion-item>
+          <ion-label>End</ion-label>
+          <ion-datetime displayFormat="DD/MM/YYYY HH:mm" pickerFormat="MMM D:HH:mm" [(ngModel)]="event.endTime" [min]="event.startTime"></ion-datetime>
+        </ion-item>
+      <ion-item>
+        <ion-label>All Day?</ion-label>
+        <ion-checkbox [(ngModel)] = "event.allDay"></ion-checkbox>
+      </ion-item>
+     <!-- <ion-item>
+        <ion-label>Public</ion-label>
+        <ion-checkbox [(ngModel)] = "event.publicEvent"></ion-checkbox>
+      </ion-item> -->
+         </ion-card-content>
+  </ion-card>
+  <ion-footer>
+      <ion-toolbar color="primary">
+        <ion-button expand="half" fill="clear" color="light" (click)="closeModal()">
+          Close
+        </ion-button>
+        <ion-button expand="half" fill="clear" color="light" (click)="sendEventData()">
+          Send Data
+        </ion-button>
+      </ion-toolbar>
+    </ion-footer>
+</div></ng-template>
+<ng-template [ngIf]="calendar != null"><div>
+  <ion-card>
+    <ion-card-header>
+        <ion-card-title>Create Calendar</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+          <ion-item>
+          <ion-input type="text" placeholder="Title" [(ngModel)]="calendar.title"></ion-input>
+        </ion-item>
+        <ion-item>
+            <ion-input type="text" placeholder="Description" [(ngModel)]="calendar.desc"></ion-input>
+          </ion-item>
+        <ion-item>
+          <ion-list>
+            <ion-item *ngFor = "let user of users | async"  (click)="addUserToCalendar(user)">
+              {{ user.title }}
+              
+            </ion-item>
+          </ion-list>
+          <!-- <ion-item [(ngModel)] = "calendar.users"></ion-item> -->
+        </ion-item>
+      </ion-card-content>
+    </ion-card>
+    <ion-footer>
+  <ion-toolbar color="primary">
+    <ion-button expand="half" fill="clear" color="light" (click)="closeModal()">
+      Close
+    </ion-button>
+    <ion-button expand="half" fill="clear" color="light" (click)="sendCalendarData()">
+      Send Data
+    </ion-button>
+    <ion-button expand="half" fill="clear" color="light" (click)="refresh()">
+        refresh
+      </ion-button>
+  </ion-toolbar>
+</ion-footer>
+    </div></ng-template>
+  </ion-content>
+
+
