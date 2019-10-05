@@ -20,23 +20,66 @@ export class CalendarService {
 
     }
 
-    async getEvents() {
-        return await this.afstore.collection(`users/${this.user.getUID()}/event`).snapshotChanges();
+    getEvents() {
+        return this.afstore.collection(`users/${this.user.getUID()}/event`).snapshotChanges();
     }
 
-    updateCalendarEvent(data) {
-        return null;
+    updateCalendarEvent(event) {
+        return this.afstore.collection(`users/${this.user.getUID()}/event`)
+       .doc(event.EID).set({ title: event.title,
+                            desc: event.desc,
+                            allDay: event.allDay,
+                            endTime: event.endTime,
+                            startTime: event.startTime,
+                            publicEvent: event.publicEvent }, { merge: true });
+    }
+
+
+
+    updateCalendar(calendar) {
+        return this.afstore.collection(`users/${this.user.getUID()}/event`)
+       .doc(calendar.CID).set({ title: calendar.title,
+                            desc: calendar.desc,
+                            userList: calendar.userList,
+                            adminList: calendar.adminList,
+                            eventList: calendar.eventList
+                         }, { merge: true });
+    }
+
+    getCalendars() {
+        return this.afstore.collection(`calendars`).snapshotChanges();
+    }
+
+    addCalendar(calendar) {
+        return new Promise<any>((resolve, reject) => {
+            this.afstore
+                .collection(`calendars`)
+                .add(calendar)
+                .then(res => {}, err => reject(err));
+        });
+    }
+
+    removeCalendar(calendar) {
+        return new Promise<any>((resolve, reject) => {
+            this.afstore.collection(`calendar`)
+            .doc(calendar.CID).delete();
+        });
     }
 
     addEvent(event) {
-        //this.calendar.events.push(event);
+        return new Promise<any>((resolve, reject) => {
+            this.afstore
+                .collection(`users/${this.user.getUID()}/event/`)
+                .add(event)
+                .then(res => {}, err => reject(err));
+        });
     }
 
     removeEvent(event) {
-        //const index: number = this.calendar.events.indexOf(event);
-        //if (index !== -1){
-       //     this.calendar.events.splice(index, 1);
-      //  }
+        return new Promise<any>((resolve, reject) => {
+            this.afstore.collection(`users/${this.user.getUID()}/event/`)
+            .doc(event.EID).delete();
+        });
         }
 
     setCalendar(calendar: Calendar) {

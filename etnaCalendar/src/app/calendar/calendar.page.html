@@ -11,11 +11,18 @@
 
 <ion-content>
 
+  <!-- fab placed to the bottom end -->
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+    <ion-fab-button (click)=addCalendar()>
+      <ion-icon name="add"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+
   <ion-card>
     <ion-card-header tappable (click)="collapseCard = !collapseCard">
       <ion-card-title>New Event</ion-card-title>
     </ion-card-header>
-    <ion-card-content *ngIf="!collapseCard">
+    <ion-card-content *ngIf="collapseCard">
       <ion-item>
         <ion-input type="text" placeholder="Title" [(ngModel)]="event.title"></ion-input>
       </ion-item>
@@ -28,7 +35,7 @@
       </ion-item>
       <ion-item>
           <ion-label>End</ion-label>
-          <ion-datetime displayFormat="DD/MM/YYYY HH:mm" pickerFormat="MMM D:HH:mm" [(ngModel)]="event.endTime" [min]="minDate"></ion-datetime>
+          <ion-datetime displayFormat="DD/MM/YYYY HH:mm" pickerFormat="MMM D:HH:mm" [(ngModel)]="event.endTime" [min]="event.startTime"></ion-datetime>
         </ion-item>
       <ion-item>
         <ion-label>All Day?</ion-label>
@@ -69,7 +76,7 @@
     </ion-col>
     <ion-col size="4" text-right>
       <ion-button fill="clear" (click)="next()">
-        <ion-icon name="arrow-next" slot="icon-only"></ion-icon>
+        <ion-icon name="arrow-forward" slot="icon-only"></ion-icon>
       </ion-button>
     </ion-col>
   </ion-row>

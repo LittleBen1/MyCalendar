@@ -1,11 +1,12 @@
 import { Component, Inject, LOCALE_ID, OnInit, ViewChild } from '@angular/core';
 import { CalendarComponent } from 'ionic2-calendar/calendar';
-import { AlertController } from '@ionic/angular';
+import { AlertController, ModalController } from '@ionic/angular';
 import { formatDate } from '@angular/common';
 import { AngularFirestore } from '@angular/fire/firestore';
 import { UserService } from '../user.service';
 import { firestore } from 'firebase/app';
 import { CalendarService } from '../calendar.service';
+import { ModalPage } from '../modal/modal.page';
 
 @Component({
   selector: 'app-calendar',
@@ -20,10 +21,21 @@ export class CalendarPage implements OnInit {
     startTime: '',
     endTime: '',
     allDay: false,
-    publicEvent: false
+    publicEvent: false,
+    EID: ''
+  };
+
+  fireCalendar = {
+    title: '',
+    desc: '',
+    users: [],
+    admins: [],
+    CID: '',
+    public: false
   };
 
   minDate = new Date().toISOString();
+  
 
   eventList = [];
   eventSource = [];
@@ -41,6 +53,7 @@ export class CalendarPage implements OnInit {
   ngOnInit() {
 
     this.loadEvents();
+    console.log(this.minDate);
   }
 
 
@@ -48,41 +61,31 @@ export class CalendarPage implements OnInit {
   //   return this.eventListRef;
   // }
 
-  async loadEvents() {
-    (await this.eventService.getEvents()).subscribe(res => (this.eventList = res));
-    console.log(this.eventList);
+  loadEvents() {
+    this.eventSource = [];
+    this.eventService.getEvents().subscribe(res => (this.eventList = res));
     for (const event of this.eventList) {
-      console.log(event.payload.doc.data().startTime.toDate());
       const eventCopy  = {
         title: event.payload.doc.data().title,
         desc: event.payload.doc.data().desc,
         startTime: new Date(event.payload.doc.data().startTime.toDate()),
         endTime: new Date(event.payload.doc.data().endTime.toDate()),
         allDay: event.payload.doc.data().allDay,
-        publicEvent: event.payload.doc.data().publicEvent
+        publicEvent: event.payload.doc.data().publicEvent,
+        EID: event.payload.doc.id
       };
       this.eventSource.push(eventCopy);
    
       // debugger;
     }
     this.myCal.loadEvents();
-    this.resetEvent();
+    //this.resetEvent();
   }
-    // let getDoc = ref.get().toPromise()
-    // .then(doc => {
-    //   if (!doc.exists) {
-    //     console.log('No Such Document');
-    //   }
-    //   else {
-    //     console.log('Document data: ', doc.data());
-    //   }
-    // }).catch(err => {
-    //   console.log('Error getting document ', err);
-    // });
-    //  //this.eventSource.push(eventCopy);
-    // // this.myCal.loadEvents();
-    // this.resetEvent();
 
+  addCalendar() {
+
+    this.openCalendarModal();
+  }
 
   resetEvent() {
     this.event = {
@@ -92,7 +95,44 @@ export class CalendarPage implements OnInit {
       endTime: new Date().toISOString(),
       allDay: false,
       publicEvent: false,
+      EID: '',
     };
+  }
+
+  async openEventModal(eventCopy) {
+    const modal = await this.modalController.create({
+      component: ModalPage,
+      componentProps: {
+        event : eventCopy
+      }
+    });
+    modal.present();
+  }
+
+  async openCalendarModal() {
+    const modal = await this.modalController.create({
+      component: ModalPage,
+      componentProps: {
+        calendar : this.fireCalendar
+      }
+    });
+    modal.present();
+  }
+
+  updateEvent(event) {
+    this.openEventModal(event);
+    this.eventService.updateCalendarEvent(event);
+    this.loadEvents();
+  }
+
+  deleteEvent(event) {
+    this.eventService.removeEvent(event);
+    const index: number = this.eventSource.indexOf(event);
+    if (index !== -1)
+    {
+      this.eventSource.splice(index, 1);
+    }
+    this.myCal.loadEvents();
   }
 
   async onEventSelected(event) {
@@ -103,12 +143,24 @@ export class CalendarPage implements OnInit {
       header: event.title,
       subHeader: event.desc,
       message: 'From: ' + start + '<br><br>To: ' + end,
-      buttons: ['Ok']
+      buttons: ['Ok',  {
+        text: 'Update',
+        role: 'update',
+        cssClass: 'secondary',
+        handler: (blah) => {
+          this.updateEvent(event);
+        }}, {
+        text: 'Delete',
+        role: 'delete',
+        cssClass: 'secondary',
+        handler: (blah) => {
+          this.deleteEvent(event);
+        }} ]
     });
     alert.present();
   }
 
-  addEvent() {
+  async addEvent() {
     const eventCopy  = {
       title: this.event.title,
       desc: this.event.desc,
@@ -117,13 +169,24 @@ export class CalendarPage implements OnInit {
       allDay: false,
       publicEvent: false
     };
-
+    console.log(eventCopy);
     if (eventCopy.allDay) {
       const start = eventCopy.startTime;
       const end = eventCopy.endTime;
 
       eventCopy.startTime = new Date(Date.UTC(start.getUTCFullYear(), start.getUTCMonth(), start.getUTCDate()));
       eventCopy.endTime = new Date(Date.UTC(end.getUTCFullYear(), end.getUTCMonth(), end.getUTCDate() + 1));
+    }
+    if (eventCopy.endTime < eventCopy.startTime) {
+      const alert = await this.alertCtrl.create({
+        header: 'Warning',
+        subHeader: 'Wrong date Input',
+        message: 'Ending time is greater than starting date',
+        buttons: ['Ok']
+    });
+      alert.present();
+      
+      return;
     }
 
     this.eventSource.push(eventCopy);
@@ -133,13 +196,12 @@ export class CalendarPage implements OnInit {
     this.createPost(eventCopy);
     this.resetEvent();
 
-    console.log(this.eventSource);
+    console.log(eventCopy.startTime);
     //debugger;
   }
 
-  createPost(eventcopy) {
-    const ref = this.afstore.collection(`users/${this.user.getUID()}/event/`);
-    ref.add(eventcopy);
+  createPost(eventCopy) {
+    this.eventService.addEvent(eventCopy);
   }
 
   changeMode(mode) {
@@ -174,7 +236,8 @@ export class CalendarPage implements OnInit {
   constructor(private alertCtrl: AlertController,
               @Inject(LOCALE_ID) private locale: string,
               public afstore: AngularFirestore,
-              public user: UserService, public eventService: CalendarService) {
+              public user: UserService, public eventService: CalendarService,
+              public modalController: ModalController) {
               //this.loadEvents();
               }
 }

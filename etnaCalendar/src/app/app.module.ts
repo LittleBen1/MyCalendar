@@ -18,10 +18,13 @@ import { AuthService } from './auth.service';
 import { HttpClientModule } from '@angular/common/http';
 import { ShareModule } from './share.module';
 import { CalendarService } from './calendar.service';
+import { ModalPageModule } from './modal/modal.module';
+import { WeatherComponent } from './weather/weather.component';
+import { WeatherService } from './weather.service';
 
 
 @NgModule({
-  declarations: [AppComponent],
+  declarations: [AppComponent, WeatherComponent],
   entryComponents: [],
   imports: [BrowserModule,
      IonicModule.forRoot(),
@@ -31,6 +34,7 @@ import { CalendarService } from './calendar.service';
      AngularFirestoreModule,
      HttpClientModule,
      ShareModule,
+     ModalPageModule
     ],
   providers: [
     StatusBar,
@@ -38,7 +42,8 @@ import { CalendarService } from './calendar.service';
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
     UserService,
     AuthService,
-    CalendarService
+    CalendarService,
+    WeatherService
   ],
   bootstrap: [AppComponent]
 })

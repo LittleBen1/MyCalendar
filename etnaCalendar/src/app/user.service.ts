@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { AngularFireAuth } from '@angular/fire/auth';
 import { first } from 'rxjs/operators';
 import { auth } from 'firebase/app';
+import { AngularFirestore } from '@angular/fire/firestore';
 
 interface User {
     username: string;
@@ -13,7 +14,7 @@ interface User {
 export class UserService {
 
     private user: User;
-    constructor(private afAuth: AngularFireAuth) {
+    constructor(private afAuth: AngularFireAuth, private afStore: AngularFirestore) {
     }
 
     setUser(user: User) {
@@ -26,7 +27,6 @@ export class UserService {
         const user = await this.afAuth.authState.pipe(first()).toPromise();
 
         if (user) {
-            
             this.setUser({
                 username: user.email.split('@')[0],
                 uid: user.uid,
@@ -35,6 +35,10 @@ export class UserService {
             return true;
         }
         return false;
+    }
+
+    getUsers() {
+        return this.afStore.collection(`users/${this.getUID()}/event`).snapshotChanges();
     }
 
     getProfilePic() {

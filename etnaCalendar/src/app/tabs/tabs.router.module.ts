@@ -11,6 +11,7 @@ const routes: Routes = [
             { path: 'profile', loadChildren: '../profile/profile.module#ProfilePageModule' },
             { path: 'calendar', loadChildren: '../calendar/calendar.module#CalendarPageModule' },
             { path: 'uploader', loadChildren: '../uploader/uploader.module#UploaderPageModule' },
+            { path: 'calendarList', loadChildren: '../calendar-list/calendar-list.module#CalendarListPageModule' },
         ]
     }
 ];
