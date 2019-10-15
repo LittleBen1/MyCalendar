@@ -21,11 +21,12 @@ import { CalendarService } from './calendar.service';
 import { ModalPageModule } from './modal/modal.module';
 import { WeatherComponent } from './weather/weather.component';
 import { WeatherService } from './weather.service';
+import { SettingsComponent } from './setting/setting.component';
 
 
 @NgModule({
-  declarations: [AppComponent, WeatherComponent],
-  entryComponents: [],
+  declarations: [AppComponent, WeatherComponent, SettingsComponent],
+  entryComponents: [SettingsComponent],
   imports: [BrowserModule,
      IonicModule.forRoot(),
      AppRoutingModule,

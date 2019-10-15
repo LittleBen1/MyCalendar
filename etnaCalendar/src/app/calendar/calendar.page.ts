@@ -1,12 +1,13 @@
 import { Component, Inject, LOCALE_ID, OnInit, ViewChild } from '@angular/core';
 import { CalendarComponent } from 'ionic2-calendar/calendar';
-import { AlertController, ModalController } from '@ionic/angular';
+import { AlertController, ModalController, PopoverController } from '@ionic/angular';
 import { formatDate } from '@angular/common';
 import { AngularFirestore } from '@angular/fire/firestore';
 import { UserService } from '../user.service';
 import { firestore } from 'firebase/app';
 import { CalendarService } from '../calendar.service';
 import { ModalPage } from '../modal/modal.page';
+import { SettingsComponent } from '../setting/setting.component';
 
 @Component({
   selector: 'app-calendar',
@@ -110,6 +111,7 @@ export class CalendarPage implements OnInit {
   }
 
   async openCalendarModal() {
+    
     const modal = await this.modalController.create({
       component: ModalPage,
       componentProps: {
@@ -118,6 +120,16 @@ export class CalendarPage implements OnInit {
     });
     modal.present();
   }
+
+  async presentPopover(ev: any) {
+  const popover = await this.popoverController.create({
+    component: SettingsComponent,
+    event: ev,
+    componentProps: { page: 'Login' },
+    cssClass: 'popover_class',
+  });
+  return await popover.present();
+}
 
   updateEvent(event) {
     this.openEventModal(event);
@@ -161,43 +173,47 @@ export class CalendarPage implements OnInit {
   }
 
   async addEvent() {
-    const eventCopy  = {
-      title: this.event.title,
-      desc: this.event.desc,
-      startTime: new Date(this.event.startTime),
-      endTime: new Date(this.event.endTime),
-      allDay: false,
-      publicEvent: false
-    };
-    console.log(eventCopy);
-    if (eventCopy.allDay) {
-      const start = eventCopy.startTime;
-      const end = eventCopy.endTime;
-
-      eventCopy.startTime = new Date(Date.UTC(start.getUTCFullYear(), start.getUTCMonth(), start.getUTCDate()));
-      eventCopy.endTime = new Date(Date.UTC(end.getUTCFullYear(), end.getUTCMonth(), end.getUTCDate() + 1));
-    }
-    if (eventCopy.endTime < eventCopy.startTime) {
-      const alert = await this.alertCtrl.create({
-        header: 'Warning',
-        subHeader: 'Wrong date Input',
-        message: 'Ending time is greater than starting date',
-        buttons: ['Ok']
-    });
-      alert.present();
-      
-      return;
-    }
-
-    this.eventSource.push(eventCopy);
-
+    this.openEventModal(event);
+    this.eventService.addEvent(event);
     this.loadEvents();
-    this.myCal.loadEvents();
-    this.createPost(eventCopy);
-    this.resetEvent();
+    
+    // const eventCopy  = {
+    //   title: this.event.title,
+    //   desc: this.event.desc,
+    //   startTime: new Date(this.event.startTime),
+    //   endTime: new Date(this.event.endTime),
+    //   allDay: false,
+    //   publicEvent: false
+    // };
+    // console.log(eventCopy);
+    // if (eventCopy.allDay) {
+    //   const start = eventCopy.startTime;
+    //   const end = eventCopy.endTime;
 
-    console.log(eventCopy.startTime);
-    //debugger;
+    //   eventCopy.startTime = new Date(Date.UTC(start.getUTCFullYear(), start.getUTCMonth(), start.getUTCDate()));
+    //   eventCopy.endTime = new Date(Date.UTC(end.getUTCFullYear(), end.getUTCMonth(), end.getUTCDate() + 1));
+    // }
+    // if (eventCopy.endTime < eventCopy.startTime) {
+    //   const alert = await this.alertCtrl.create({
+    //     header: 'Warning',
+    //     subHeader: 'Wrong date Input',
+    //     message: 'Ending time is greater than starting date',
+    //     buttons: ['Ok']
+    // });
+    //   alert.present();
+      
+    //   return;
+    // }
+
+    // this.eventSource.push(eventCopy);
+
+    // this.loadEvents();
+    // this.myCal.loadEvents();
+    // this.createPost(eventCopy);
+    // this.resetEvent();
+
+    // console.log(eventCopy.startTime);
+    // //debugger;
   }
 
   createPost(eventCopy) {
@@ -237,7 +253,7 @@ export class CalendarPage implements OnInit {
               @Inject(LOCALE_ID) private locale: string,
               public afstore: AngularFirestore,
               public user: UserService, public eventService: CalendarService,
-              public modalController: ModalController) {
+              public modalController: ModalController, private popoverController: PopoverController) {
               //this.loadEvents();
               }
 }
