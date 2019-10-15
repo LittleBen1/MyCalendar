@@ -1,12 +1,19 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>calendarList</ion-title>
+    <ion-title>Calendar Subcriptions</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
   <ion-list>
-    <ion-item *ngfor="let calendar of calendarList;">
+    <ion-label *ngIf="adminCalendars">Calendar where you are an Admin</ion-label>
+    <ion-item *ngFor="let calendar of adminCalendars">
+      {{ calendar.title }}
+    </ion-item>
+  </ion-list>
+  <ion-list>
+    <ion-label *ngIf="userCalendars">Calendar where you are a regular User</ion-label>
+    <ion-item *ngFor="let calendar of userCalendars">
       {{ calendar.title }}
     </ion-item>
   </ion-list>

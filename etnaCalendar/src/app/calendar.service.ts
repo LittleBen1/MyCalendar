@@ -50,10 +50,22 @@ export class CalendarService {
         return this.afstore.collection(`calendars`).snapshotChanges();
     }
 
+    getCalendarForUser(user) {
+        return this.afstore.collection(`calendars`, ref => ref.where("users","array-contains",`${this.user.getUID()}`)).snapshotChanges();
+    }
+
+    getAllCalendars() {
+        return this.afstore.collection('calendars').snapshotChanges();
+    }
+
+    getCalendarForAdmin(user) {
+        return this.afstore.collection(`calendars`, ref => ref.where(`admins`,"array-contains",`${this.user.getUID()}`)).snapshotChanges();
+    }
+
     addCalendar(calendar) {
         return new Promise<any>((resolve, reject) => {
             this.afstore
-                .collection(`calendars`)
+                .collection('calendars')
                 .add(calendar)
                 .then(res => {}, err => reject(err));
         });

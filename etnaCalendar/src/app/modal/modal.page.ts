@@ -11,19 +11,21 @@ import { UserService } from '../user.service';
 export class ModalPage implements OnInit {
 
   constructor(private navParams: NavParams, private modalController: ModalController, 
-    private eventService: CalendarService, private userService: UserService) { }
+    private calendarService: CalendarService, private userService: UserService) { }
 
   minDate = new Date().toISOString();
   event = null;
   calendar = null;
-    users = null;
+  users = null;
 
   ngOnInit() {
     this.event = this.navParams.get('event');
-    this.calendar = this.navParams.get('calendar');
+    if (this.event != null) {
     this.event.startTime = this.event.startTime.toISOString();
-    this.event.endTime = this.event.endTime.toISOString();
-    debugger;
+    this.event.endTime = this.event.endTime.toISOString();    
+    }
+    this.calendar = this.navParams.get('calendar');
+
     if (this.calendar != null) {
       this.users = this.userService.getUsers();
       console.log(this.users);
@@ -43,13 +45,14 @@ export class ModalPage implements OnInit {
   sendEventData() {
     this.event.startTime = new Date(this.event.startTime);
     this.event.endTime = new Date(this.event.endTime);
-    this.eventService.updateCalendarEvent(this.event);
+    this.calendarService.updateCalendarEvent(this.event);
     this.closeModal();
   }
 
   sendCalendarData() {
-    this.calendar.users.add(this.userService.getUID);
-    this.eventService.addCalendar(this.calendar);
+    this.calendar.admins.push(this.userService.getUID());
+    debugger;
+    this.calendarService.addCalendar(this.calendar);
     this.closeModal();
   }
 
