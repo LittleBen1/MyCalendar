@@ -1,4 +1,4 @@
-<ion-content>
+<ion-content class="modal">
     <ng-template [ngIf]="event != null"><div>
   <ion-card>
     <ion-card-header>
@@ -23,12 +23,12 @@
         <ion-label>All Day?</ion-label>
         <ion-checkbox [(ngModel)] = "event.allDay"></ion-checkbox>
       </ion-item>
-     <!-- <ion-item>
+      <ion-item>
         <ion-label>Public</ion-label>
         <ion-checkbox [(ngModel)] = "event.publicEvent"></ion-checkbox>
-      </ion-item> -->
+      </ion-item> 
          </ion-card-content>
-  </ion-card>
+ 
   <ion-footer>
       <ion-toolbar color="primary">
         <ion-button expand="half" fill="clear" color="light" (click)="closeModal()">
@@ -39,7 +39,8 @@
         </ion-button>
       </ion-toolbar>
     </ion-footer>
-</div></ng-template>
+  </ion-card>
+  </div></ng-template>
 <ng-template [ngIf]="calendar != null"><div>
   <ion-card>
     <ion-card-header>
@@ -62,7 +63,8 @@
           <!-- <ion-item [(ngModel)] = "calendar.users"></ion-item> -->
         </ion-item>
       </ion-card-content>
-    </ion-card>
+    
+ 
     <ion-footer>
   <ion-toolbar color="primary">
     <ion-button expand="half" fill="clear" color="light" (click)="closeModal()">
@@ -76,7 +78,8 @@
       </ion-button>
   </ion-toolbar>
 </ion-footer>
-    </div></ng-template>
+</ion-card>
+</div></ng-template>
   </ion-content>
 
 

@@ -1,4 +1,4 @@
-import { Component, Inject, LOCALE_ID, OnInit, ViewChild } from '@angular/core';
+import { Component, Inject, LOCALE_ID, OnInit, ViewChild, Output, EventEmitter } from '@angular/core';
 import { CalendarComponent } from 'ionic2-calendar/calendar';
 import { AlertController, ModalController, PopoverController } from '@ionic/angular';
 import { formatDate } from '@angular/common';
@@ -8,13 +8,19 @@ import { firestore } from 'firebase/app';
 import { CalendarService } from '../calendar.service';
 import { ModalPage } from '../modal/modal.page';
 import { SettingsComponent } from '../setting/setting.component';
+import { Router, ActivatedRoute } from '@angular/router';
+import { Event } from '../event.model';
+import { EventTransferService } from '../event-transfer.service';
 
 @Component({
   selector: 'app-calendar',
   templateUrl: 'calendar.page.html',
   styleUrls: ['calendar.page.scss'],
+  providers: [EventTransferService]
 })
 export class CalendarPage implements OnInit {
+
+  //@Output() change = new EventEmitter();
 
   event = {
     title: '',
@@ -40,6 +46,7 @@ export class CalendarPage implements OnInit {
 
   eventList = [];
   eventSource = [];
+  checkedCalendar = [];
 
   calendar = {
     mode: 'week',
@@ -52,9 +59,25 @@ export class CalendarPage implements OnInit {
 
 
   ngOnInit() {
+    this.eventTransferService.subsVar = this.eventTransferService.invokeFirstComponentFunction.subscribe((calendarChecked) => {
+      console.log("load events");
+      console.log(calendarChecked);
+      this.loadCalendars(calendarChecked);
+    });
 
     this.loadEvents();
+    this.activatedRoute.queryParams.subscribe((res)=>{
+      res.forEach(element => {
+        this.checkedCalendar.push(element);
+        console.log(element); 
+      });
+  });
+  console.log('constructor');
+  console.log(this.checkedCalendar);
+  this.loadCalendars(this.checkedCalendar);
     console.log(this.minDate);
+
+
   }
 
 
@@ -62,9 +85,52 @@ export class CalendarPage implements OnInit {
   //   return this.eventListRef;
   // }
 
+  loadCalendars(calendars: string[]) {
+   let listEvents = [];
+   console.log(calendars);
+   console.log(this.eventService.getEventsFromCalendarID(calendars[0]));
+
+    calendars.forEach(id => {
+      this.eventService.getEventsFromCalendarID(id).subscribe(res => listEvents = res);
+      console.log('loadCalendars');
+      console.log(listEvents);
+      for (const event of this.eventList) {
+        const eventCopy  = {
+          title: event.payload.doc.data().title,
+          desc: event.payload.doc.data().desc,
+          startTime: new Date(event.payload.doc.data().startTime.toDate()),
+          endTime: new Date(event.payload.doc.data().endTime.toDate()),
+          allDay: event.payload.doc.data().allDay,
+          publicEvent: event.payload.doc.data().publicEvent,
+          EID: event.payload.doc.id
+        };
+        this.eventSource.push(eventCopy);
+      }
+    });
+    //this.myCal.loadEvents();
+    console.log('loadCalendars: ' + this.eventSource);
+}
+
+  convertFromResToEvents(res) {
+    for (const event of res) {
+      const eventCopy  = {
+        title: event.payload.doc.data().title,
+        desc: event.payload.doc.data().desc,
+        startTime: new Date(event.payload.doc.data().startTime.toDate()),
+        endTime: new Date(event.payload.doc.data().endTime.toDate()),
+        allDay: event.payload.doc.data().allDay,
+        publicEvent: event.payload.doc.data().publicEvent,
+        EID: event.payload.doc.id
+      };
+      this.eventSource.push(eventCopy);
+    }
+  console.log('convert from res to events: ' + this.eventSource);
+  }
+
   loadEvents() {
     this.eventSource = [];
-    this.eventService.getEvents().subscribe(res => (this.eventList = res));
+    console.log(this.eventSource);
+    this.eventService.getEvents().subscribe(res => this.eventList = res);
     for (const event of this.eventList) {
       const eventCopy  = {
         title: event.payload.doc.data().title,
@@ -76,9 +142,11 @@ export class CalendarPage implements OnInit {
         EID: event.payload.doc.id
       };
       this.eventSource.push(eventCopy);
-   
-      // debugger;
     }
+    console.log('after event service: ' + this.eventSource);
+    console.log(this.checkedCalendar);
+    this.loadCalendars(this.checkedCalendar);
+    console.log(this.eventSource);
     this.myCal.loadEvents();
     //this.resetEvent();
   }
@@ -253,7 +321,16 @@ export class CalendarPage implements OnInit {
               @Inject(LOCALE_ID) private locale: string,
               public afstore: AngularFirestore,
               public user: UserService, public eventService: CalendarService,
-              public modalController: ModalController, private popoverController: PopoverController) {
-              //this.loadEvents();
+              public modalController: ModalController, private popoverController: PopoverController,
+              private router: Router, public activatedRoute : ActivatedRoute,private eventTransferService: EventTransferService) {
+              //   this.router.queryParams.subscribe(params => {
+              //   if (this.router.getCurrentNavigation().extras.state) {
+              //     this.checkedCalendar = this.router.getCurrentNavigation().extras.state.user;
+              //   }
+              // });
+              
+            //this.loadEvents();
+            console.log('here is the constructor');
+            //console.log(this.change.emit());
               }
 }

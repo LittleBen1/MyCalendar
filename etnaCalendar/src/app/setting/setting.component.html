@@ -1,10 +1,9 @@
-<ion-content>
-  <ion-list>
-    <ion-button (click)="addNewCalendar()">
-        <ion-icon name="calendar"></ion-icon>
-    </ion-button>
-    <ion-button (click)="addNewEvent()">
-      <ion-icon name="bowtie"></ion-icon>
-    </ion-button>
-  </ion-list>
-</ion-content>
+<ion-list>
+  <ion-item button (click)="addNewCalendar()" icon-end>
+      Calendar <ion-icon slot="end" name="calendar"></ion-icon>
+  </ion-item>
+  <ion-item button (click)="addNewEvent()" >
+      <ion-icon slot="end" name="bowtie"></ion-icon>
+    Event
+  </ion-item>
+</ion-list>

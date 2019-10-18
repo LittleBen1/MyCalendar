@@ -64,8 +64,6 @@ export class SettingsComponent implements OnInit {
       });
       modal.present();
    this.popoverController.dismiss();
-   
-
   }
 
 close (){

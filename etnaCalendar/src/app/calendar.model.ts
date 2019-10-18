@@ -5,5 +5,6 @@ export class Calendar {
     CID: string;
     users: User[];
     admins: User[];
-    events: Event[]
+    events: Event[];
+    checked: false;
 }

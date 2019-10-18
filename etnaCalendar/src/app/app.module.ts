@@ -22,6 +22,7 @@ import { ModalPageModule } from './modal/modal.module';
 import { WeatherComponent } from './weather/weather.component';
 import { WeatherService } from './weather.service';
 import { SettingsComponent } from './setting/setting.component';
+import { EventTransferService } from './event-transfer.service';
 
 
 @NgModule({
@@ -44,7 +45,8 @@ import { SettingsComponent } from './setting/setting.component';
     UserService,
     AuthService,
     CalendarService,
-    WeatherService
+    WeatherService,
+    EventTransferService
   ],
   bootstrap: [AppComponent]
 })

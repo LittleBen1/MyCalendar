@@ -50,6 +50,14 @@ export class CalendarService {
         return this.afstore.collection(`calendars`).snapshotChanges();
     }
 
+    getEventsFromCalendarID(id: string) {
+        return this.afstore.collection(`calendars/${id}/events`).snapshotChanges();
+    }
+
+    getCalendarById(id:string) {
+        return this.afstore.collection('calendars', ref => ref.where("calendars",'array-contains',id)).snapshotChanges();
+    }
+
     getCalendarForUser(user) {
         return this.afstore.collection(`calendars`, ref => ref.where("users","array-contains",`${this.user.getUID()}`)).snapshotChanges();
     }
