@@ -29,6 +29,16 @@ export class SettingsComponent implements OnInit {
     EID: ''
   };
 
+  
+  calendar = {
+    title: '',
+    desc: '',
+    users: [],
+    admins: [],
+    CID: '',
+    public: false
+  };
+
   constructor(
     private events: Events,
     private navParams: NavParams,
@@ -48,7 +58,7 @@ export class SettingsComponent implements OnInit {
     const modal = await this.modalController.create({
       component: ModalPage,
       componentProps: {
-        event : this.event
+        calendar : this.calendar
       }
     });
     modal.present();

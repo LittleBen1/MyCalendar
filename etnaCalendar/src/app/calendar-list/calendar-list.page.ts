@@ -22,6 +22,7 @@ export class CalendarListPage implements OnInit {
   userCalendars;
   calendarList;
   calendarChecked;
+  calendarSubscribers;
 
   ngOnInit() {
     
@@ -38,7 +39,9 @@ export class CalendarListPage implements OnInit {
        e => {
          return {
            id : e.payload.doc.id,
+           users: e.payload.doc.data(),
            ...e.payload.doc.data()
+           
          };
      })
     });
@@ -46,8 +49,13 @@ export class CalendarListPage implements OnInit {
       map(arr => arr.reduce((acc, cur) => acc.concat(cur) ) ),
     )
     this.calendarService.getAllCalendars().subscribe(res => (this.calendarList = res));
-    console.log(this.calendarList);
-    console.log(this.userCalendars);
+  }
+  test() {
+    console.log("clicked on test")
+  }
+  deleteCalendar(index) {
+    console.log(this.adminCalendars[index]);
+    this.calendarService.removeCalendar(this.adminCalendars[index]);
   }
 
   showCalendars() {

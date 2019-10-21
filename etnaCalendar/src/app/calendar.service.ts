@@ -21,6 +21,13 @@ export class CalendarService {
         return this.afstore.collection(`users/${this.user.getUID()}/event`).snapshotChanges();
     }
 
+    getCalendarFollowers(id: string) {
+        let size;
+       this.afstore.collection(`calendars/${id}/users`).valueChanges().subscribe( values => size = values.length);
+       this.afstore.collection(`calendars/${id}/admins`).valueChanges().subscribe( values => size += values.length);
+       return size;
+    }
+
     updateCalendarEvent(event) {
         return this.afstore.collection(`users/${this.user.getUID()}/event`)
        .doc(event.EID).set({ title: event.title,
@@ -78,8 +85,8 @@ export class CalendarService {
 
     removeCalendar(calendar) {
         return new Promise<any>((resolve, reject) => {
-            this.afstore.collection(`calendar`)
-            .doc(calendar.CID).delete();
+            this.afstore.collection(`calendars`)
+            .doc(calendar.id).delete();
         });
     }
 

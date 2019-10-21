@@ -57,14 +57,7 @@ export class CalendarPage implements OnInit {
 
 
   ngOnInit() {  
-
     this.fetchAndDisplayData();
-
-  console.log('Checked Calendar');
-  console.log(this.checkedCalendar);
-  this.loadCalendars(this.checkedCalendar);
-
-
   }
 
 
@@ -101,17 +94,20 @@ export class CalendarPage implements OnInit {
     }
   }
 
-  async loadEvents() {
+  loadEvents() {
     this.eventService.getEvents().subscribe(res =>{ 
       this.convertFromResToEvents(res);
       this.myCal.loadEvents();
     });
   }
 
-  async fetchAndDisplayData() {  
+  fetchAndDisplayData() {  
     this.eventSource = [];
     this.loadEvents();
-    this.loadCalendars(this.checkedCalendar);   
+    this.loadCalendars(this.checkedCalendar);
+    console.log(this.checkedCalendar);
+    console.log(this.eventSource);
+    this.myCal.loadEvents();
   }
 
   addCalendar() {
@@ -130,11 +126,12 @@ export class CalendarPage implements OnInit {
     };
   }
 
-  async openEventModal(eventCopy) {
+  async openEventModal(eventCopy, operation) {
     const modal = await this.modalController.create({
       component: ModalPage,
       componentProps: {
-        event : eventCopy
+        event : eventCopy,
+        function: operation
       }
     });
     modal.present();
@@ -162,9 +159,9 @@ export class CalendarPage implements OnInit {
 }
 
   updateEvent(event) {
-    this.openEventModal(event);
+    this.openEventModal(event,'Update');
     this.eventService.updateCalendarEvent(event);
-    this.loadEvents();
+    this.fetchAndDisplayData();
   }
 
   deleteEvent(event) {
@@ -174,7 +171,8 @@ export class CalendarPage implements OnInit {
     {
       this.eventSource.splice(index, 1);
     }
-    this.myCal.loadEvents();
+    console.log(this.eventSource);
+    this.fetchAndDisplayData();
   }
 
   async onEventSelected(event) {
@@ -203,47 +201,9 @@ export class CalendarPage implements OnInit {
   }
 
   async addEvent() {
-    this.openEventModal(event);
+    this.openEventModal(event,"New");
     this.eventService.addEvent(event);
-    this.loadEvents();
-    
-    // const eventCopy  = {
-    //   title: this.event.title,
-    //   desc: this.event.desc,
-    //   startTime: new Date(this.event.startTime),
-    //   endTime: new Date(this.event.endTime),
-    //   allDay: false,
-    //   publicEvent: false
-    // };
-    // console.log(eventCopy);
-    // if (eventCopy.allDay) {
-    //   const start = eventCopy.startTime;
-    //   const end = eventCopy.endTime;
-
-    //   eventCopy.startTime = new Date(Date.UTC(start.getUTCFullYear(), start.getUTCMonth(), start.getUTCDate()));
-    //   eventCopy.endTime = new Date(Date.UTC(end.getUTCFullYear(), end.getUTCMonth(), end.getUTCDate() + 1));
-    // }
-    // if (eventCopy.endTime < eventCopy.startTime) {
-    //   const alert = await this.alertCtrl.create({
-    //     header: 'Warning',
-    //     subHeader: 'Wrong date Input',
-    //     message: 'Ending time is greater than starting date',
-    //     buttons: ['Ok']
-    // });
-    //   alert.present();
-      
-    //   return;
-    // }
-
-    // this.eventSource.push(eventCopy);
-
-    // this.loadEvents();
-    // this.myCal.loadEvents();
-    // this.createPost(eventCopy);
-    // this.resetEvent();
-
-    // console.log(eventCopy.startTime);
-    // //debugger;
+    this.fetchAndDisplayData();
   }
 
   createPost(eventCopy) {
@@ -285,14 +245,5 @@ export class CalendarPage implements OnInit {
               public user: UserService, public eventService: CalendarService,
               public modalController: ModalController, private popoverController: PopoverController,
               private router: Router, public activatedRoute : ActivatedRoute) {
-              //   this.router.queryParams.subscribe(params => {
-              //   if (this.router.getCurrentNavigation().extras.state) {
-              //     this.checkedCalendar = this.router.getCurrentNavigation().extras.state.user;
-              //   }
-              // });
-              
-            //this.loadEvents();
-            console.log('here is the constructor');
-            //console.log(this.change.emit());
               }
 }

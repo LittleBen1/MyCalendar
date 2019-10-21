@@ -38,12 +38,25 @@ export class UserService {
     }
 
     getUsers() {
-        return this.afStore.collection(`users/${this.getUID()}/event`).snapshotChanges();
+        return this.afStore.collection(`users`).snapshotChanges();
     }
 
     getProfilePic() {
         return this.user.profilePic;
     }
+
+    getUserById(id: string) {
+        return this.afStore.collection(`users/${id}/`).snapshotChanges();
+    }
+
+    addFriend(user) {
+        return new Promise<any>((resolve, reject) => {
+            this.afStore
+                .collection(`users/${this.getUID()}/friends`)
+                .add(user)
+                .then(res => {}, err => reject(err));
+        });
+    } 
 
     getUsername() {
         return this.user.username;

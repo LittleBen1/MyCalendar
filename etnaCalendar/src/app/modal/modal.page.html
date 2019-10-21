@@ -2,7 +2,7 @@
     <ng-template [ngIf]="event != null"><div>
   <ion-card>
     <ion-card-header>
-      <ion-card-title>Update Event</ion-card-title>
+      <ion-card-title>{{function}} Event</ion-card-title>
     </ion-card-header>
     <ion-card-content>
         <ion-item>
@@ -27,6 +27,7 @@
         <ion-label>Public</ion-label>
         <ion-checkbox [(ngModel)] = "event.publicEvent"></ion-checkbox>
       </ion-item> 
+      <ng-template [ngIf]="function == New">
       <ion-item>
           <ion-label>add to personal calendar</ion-label>
           <ion-checkbox (click) = "personalCalendar = !personalCalendar"></ion-checkbox>
@@ -39,6 +40,7 @@
                 <ion-select-option value="{{calendar.id}}">{{calendar.title}}</ion-select-option>
               </ion-select>
             </ion-item>
+      </ng-template>
     </ng-template>
          </ion-card-content>
  
@@ -69,7 +71,7 @@
         <ion-item>
           <ion-list>
             <ion-item *ngFor = "let user of users | async"  (click)="addUserToCalendar(user)">
-              {{ user.title }}
+              {{ user.username}}
               
             </ion-item>
           </ion-list>

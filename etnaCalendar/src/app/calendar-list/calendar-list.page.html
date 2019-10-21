@@ -5,20 +5,69 @@
 </ion-header>
 
 <ion-content>
-  <ion-list>
-    <ion-label *ngIf="adminCalendars">Calendar where you are an A dmin</ion-label>
-    <ion-item *ngFor="let calendar of adminCalendars">
-        <ion-icon slot="start" name="person"></ion-icon>
-      {{ calendar.title }}
+  <ion-list>  
+    <ion-item-sliding *ngFor="let calendar of adminCalendars;let i = index;" lines="none">    
+  <ion-card class="admin-card"> 
+      <ion-item lines="none">    
+      <ion-avatar slot="start">
+        <ion-img src="../../assets/imgs/DonaldDuckFace.png"></ion-img>
+      </ion-avatar>
+      <ion-label>
+        <h2><b>{{ calendar.title }}</b></h2>
+      </ion-label>
+      </ion-item>
+      <ion-item lines="none" class="admin-desc">
+        <ion-label text-wrap>{{ calendar.desc }}</ion-label>
+      </ion-item>
+        
+    <ion-button size="small" fill="clear">
+      <ion-icon slot="start" name="text"></ion-icon>34
+    </ion-button>
+    <ion-button size="small" fill="clear">
+      <ion-icon slot="start" name="heart-empty"></ion-icon>352
+    </ion-button>
+    <ion-button size="small" fill="clear">
+      <ion-icon slot="start" name="repeat"></ion-icon>{{ calendar.users.length }}
+    </ion-button>
+    <ion-button size="small" fill="clear">
       <ion-checkbox slot="end" [(ngModel)] = "calendar.checked"></ion-checkbox>
-    </ion-item>
+    </ion-button>
+  </ion-card>
+
+    <ion-item-options side="end">
+        <ion-item-option color="danger" (click)="deleteCalendar(i)">Delete</ion-item-option>
+      </ion-item-options>
+
+        </ion-item-sliding>
+
+    <ion-item-sliding *ngFor="let calendar of userCalendars" lines="none">
+    <ion-card class="user-card">
+        <ion-item lines="none">
+          <ion-avatar slot="start">
+            <ion-img src="../../assets/imgs/DonaldDuckFace.png"></ion-img>
+          </ion-avatar>
+          <ion-label>
+            <h2><b>{{ calendar.title }}</b></h2>
+          </ion-label>
+        </ion-item>
+        <ion-item lines="none" class="user-desc">
+          <ion-label text-wrap>{{ calendar.desc }}</ion-label>
+        </ion-item>
+        <ion-button size="small" fill="clear">
+          <ion-icon slot="start" name="text"></ion-icon>34
+        </ion-button>
+        <ion-button size="small" fill="clear">
+          <ion-icon slot="start" name="heart-empty"></ion-icon>352
+        </ion-button>
+        <ion-button size="small" fill="clear">
+            <ion-icon slot="start" name="repeat"></ion-icon>{{ calendar.users.length }}
+        </ion-button>
+        <ion-button size="small" fill="clear">
+          <ion-checkbox slot="end" [(ngModel)] = "calendar.checked"></ion-checkbox>
+        </ion-button>
+      </ion-card>
+    </ion-item-sliding>
   </ion-list>
-  <ion-list>
-    <ion-label *ngIf="userCalendars">Calendar where you are a regular User</ion-label>
-    <ion-item *ngFor="let calendar of userCalendars">
-      {{ calendar.title }}
-      <ion-checkbox slot="end" [(ngModel)] = "calendar.checked"></ion-checkbox>
-    </ion-item>
-  </ion-list>
+
   <ion-button expand="full" (click)="showCalendars()">Show Calendars</ion-button>
 </ion-content>
