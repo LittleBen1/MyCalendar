@@ -5,4 +5,5 @@ export class Event {
     title: string;
     desc: string;
     allDay: false;
+    calendarId: string;
 }

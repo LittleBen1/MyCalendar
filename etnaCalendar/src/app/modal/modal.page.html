@@ -6,18 +6,18 @@
     </ion-card-header>
     <ion-card-content>
         <ion-item>
-        <ion-input type="text" placeholder="Title" [(ngModel)]="event.title"></ion-input>
+        <ion-input type="text" placeholder="Title" [(ngModel)]="event.title" required></ion-input>
       </ion-item>
       <ion-item>
           <ion-input type="text" placeholder="Description" [(ngModel)]="event.desc"></ion-input>
         </ion-item>
       <ion-item>
         <ion-label>Start</ion-label>
-        <ion-datetime displayFormat="DD/MM/YYYY HH:mm" pickerFormat="MMM D:HH:mm" [(ngModel)]="event.startTime" [min]="minDate"></ion-datetime>
+        <ion-datetime displayFormat="DD/MM/YYYY HH:mm" pickerFormat="MMM D:HH:mm" [(ngModel)]="event.startTime" [min]="minDate" required></ion-datetime>
       </ion-item>
       <ion-item>
           <ion-label>End</ion-label>
-          <ion-datetime displayFormat="DD/MM/YYYY HH:mm" pickerFormat="MMM D:HH:mm" [(ngModel)]="event.endTime" [min]="event.startTime"></ion-datetime>
+          <ion-datetime displayFormat="DD/MM/YYYY HH:mm" pickerFormat="MMM D:HH:mm" [(ngModel)]="event.endTime" [min]="event.startTime" required></ion-datetime>
         </ion-item>
       <ion-item>
         <ion-label>All Day?</ion-label>
@@ -27,6 +27,19 @@
         <ion-label>Public</ion-label>
         <ion-checkbox [(ngModel)] = "event.publicEvent"></ion-checkbox>
       </ion-item> 
+      <ion-item>
+          <ion-label>add to personal calendar</ion-label>
+          <ion-checkbox (click) = "personalCalendar = !personalCalendar"></ion-checkbox>
+      </ion-item>
+      <ng-template [ngIf]="!personalCalendar" [(ngModel)]="personalCalendar" name="personalCalendar" ngDefaultControl>
+
+          <ion-item>
+              <ion-label>Calendar List</ion-label>
+              <ion-select (ionChange)="onChangeHandler(calendar.id)" ngModel="CID" okText="Okay" cancelText="Dismiss" *ngFor="let calendar of adminCalendars" required>
+                <ion-select-option value="{{calendar.id}}">{{calendar.title}}</ion-select-option>
+              </ion-select>
+            </ion-item>
+    </ng-template>
          </ion-card-content>
  
   <ion-footer>

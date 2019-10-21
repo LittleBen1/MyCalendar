@@ -6,7 +6,7 @@ import { combineLatest } from 'rxjs';
 import { Calendar } from '../calendar.model';
 import { CalendarPage } from '../calendar/calendar.page'
 import { Router, NavigationExtras } from '@angular/router';
-import { EventTransferService } from '../event-transfer.service';
+import { DataService } from '../services/data.service';
 
 @Component({
   selector: 'app-calendar-list',
@@ -16,7 +16,7 @@ import { EventTransferService } from '../event-transfer.service';
 export class CalendarListPage implements OnInit {
 
   constructor(public calendarService: CalendarService, public user: UserService,
-              private router: Router, private transferService: EventTransferService) { }
+              private router: Router, private dataService: DataService) { }
 
   adminCalendars;
   userCalendars;
@@ -30,18 +30,16 @@ export class CalendarListPage implements OnInit {
       e => {
         return {
           id : e.payload.doc.id,
-          checked: false,
           ...e.payload.doc.data()
-        } as Calendar;
+        };
     })
   });
      this.calendarService.getCalendarForUser(this.user).subscribe(res => {this.userCalendars = res.map(
        e => {
          return {
            id : e.payload.doc.id,
-           checked: false,
            ...e.payload.doc.data()
-         } as Calendar;
+         };
      })
     });
     this.calendarList = combineLatest<any[]>(this.adminCalendars, this.userCalendars).pipe(
@@ -53,6 +51,7 @@ export class CalendarListPage implements OnInit {
   }
 
   showCalendars() {
+    this.dataService.setData([]);
     this.calendarChecked = [];
    this.adminCalendars.forEach(element => {
      if (element.checked)
@@ -63,11 +62,8 @@ export class CalendarListPage implements OnInit {
      this.calendarChecked.push(element.id);
    });
     console.log(this.calendarChecked);
-    var test = "test";
-   this.transferService.onFirstComponentButtonClick(test);
-    this.router.navigate(['/tabs/calendar'],{
-      queryParams: this.calendarChecked,
-      });
+    this.dataService.setData(this.calendarChecked);
+    this.router.navigateByUrl('tabs/calendar');
   }
 
 }

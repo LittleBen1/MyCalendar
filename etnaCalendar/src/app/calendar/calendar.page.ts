@@ -10,13 +10,11 @@ import { ModalPage } from '../modal/modal.page';
 import { SettingsComponent } from '../setting/setting.component';
 import { Router, ActivatedRoute } from '@angular/router';
 import { Event } from '../event.model';
-import { EventTransferService } from '../event-transfer.service';
 
 @Component({
   selector: 'app-calendar',
   templateUrl: 'calendar.page.html',
-  styleUrls: ['calendar.page.scss'],
-  providers: [EventTransferService]
+  styleUrls: ['calendar.page.scss']
 })
 export class CalendarPage implements OnInit {
 
@@ -58,24 +56,13 @@ export class CalendarPage implements OnInit {
   @ViewChild(CalendarComponent, {static: true}) myCal: CalendarComponent;
 
 
-  ngOnInit() {
-    this.eventTransferService.subsVar = this.eventTransferService.invokeFirstComponentFunction.subscribe((calendarChecked) => {
-      console.log("load events");
-      console.log(calendarChecked);
-      this.loadCalendars(calendarChecked);
-    });
+  ngOnInit() {  
 
-    this.loadEvents();
-    this.activatedRoute.queryParams.subscribe((res)=>{
-      res.forEach(element => {
-        this.checkedCalendar.push(element);
-        console.log(element); 
-      });
-  });
-  console.log('constructor');
+    this.fetchAndDisplayData();
+
+  console.log('Checked Calendar');
   console.log(this.checkedCalendar);
   this.loadCalendars(this.checkedCalendar);
-    console.log(this.minDate);
 
 
   }
@@ -86,30 +73,18 @@ export class CalendarPage implements OnInit {
   // }
 
   loadCalendars(calendars: string[]) {
-   let listEvents = [];
-   console.log(calendars);
-   console.log(this.eventService.getEventsFromCalendarID(calendars[0]));
-
-    calendars.forEach(id => {
-      this.eventService.getEventsFromCalendarID(id).subscribe(res => listEvents = res);
-      console.log('loadCalendars');
-      console.log(listEvents);
-      for (const event of this.eventList) {
-        const eventCopy  = {
-          title: event.payload.doc.data().title,
-          desc: event.payload.doc.data().desc,
-          startTime: new Date(event.payload.doc.data().startTime.toDate()),
-          endTime: new Date(event.payload.doc.data().endTime.toDate()),
-          allDay: event.payload.doc.data().allDay,
-          publicEvent: event.payload.doc.data().publicEvent,
-          EID: event.payload.doc.id
-        };
-        this.eventSource.push(eventCopy);
+   if (this.activatedRoute.snapshot.data['special']) {
+    this.checkedCalendar = this.activatedRoute.snapshot.data['special'];
+  }
+  if (this.checkedCalendar.length > 0){
+    for (let i = 0; i <  this.checkedCalendar[0].length; i++) {
+      this.eventService.getEventsFromCalendarID(this.checkedCalendar[0][i]).subscribe(res =>  {
+        this.convertFromResToEvents(res);
+        this.myCal.loadEvents();
+      });
       }
-    });
-    //this.myCal.loadEvents();
-    console.log('loadCalendars: ' + this.eventSource);
-}
+    }
+  }
 
   convertFromResToEvents(res) {
     for (const event of res) {
@@ -124,35 +99,22 @@ export class CalendarPage implements OnInit {
       };
       this.eventSource.push(eventCopy);
     }
-  console.log('convert from res to events: ' + this.eventSource);
   }
 
-  loadEvents() {
+  async loadEvents() {
+    this.eventService.getEvents().subscribe(res =>{ 
+      this.convertFromResToEvents(res);
+      this.myCal.loadEvents();
+    });
+  }
+
+  async fetchAndDisplayData() {  
     this.eventSource = [];
-    console.log(this.eventSource);
-    this.eventService.getEvents().subscribe(res => this.eventList = res);
-    for (const event of this.eventList) {
-      const eventCopy  = {
-        title: event.payload.doc.data().title,
-        desc: event.payload.doc.data().desc,
-        startTime: new Date(event.payload.doc.data().startTime.toDate()),
-        endTime: new Date(event.payload.doc.data().endTime.toDate()),
-        allDay: event.payload.doc.data().allDay,
-        publicEvent: event.payload.doc.data().publicEvent,
-        EID: event.payload.doc.id
-      };
-      this.eventSource.push(eventCopy);
-    }
-    console.log('after event service: ' + this.eventSource);
-    console.log(this.checkedCalendar);
-    this.loadCalendars(this.checkedCalendar);
-    console.log(this.eventSource);
-    this.myCal.loadEvents();
-    //this.resetEvent();
+    this.loadEvents();
+    this.loadCalendars(this.checkedCalendar);   
   }
 
   addCalendar() {
-
     this.openCalendarModal();
   }
 
@@ -322,7 +284,7 @@ export class CalendarPage implements OnInit {
               public afstore: AngularFirestore,
               public user: UserService, public eventService: CalendarService,
               public modalController: ModalController, private popoverController: PopoverController,
-              private router: Router, public activatedRoute : ActivatedRoute,private eventTransferService: EventTransferService) {
+              private router: Router, public activatedRoute : ActivatedRoute) {
               //   this.router.queryParams.subscribe(params => {
               //   if (this.router.getCurrentNavigation().extras.state) {
               //     this.checkedCalendar = this.router.getCurrentNavigation().extras.state.user;

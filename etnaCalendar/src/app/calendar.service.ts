@@ -1,15 +1,12 @@
 import { Injectable } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/firestore';
 import { UserService } from './user.service';
+import { Event } from './event.model';
 
 // tslint:disable-next-line: class-name
 interface Calendar {
     events: [];
     cId: string;
-}
-
-interface Event {
-    
 }
 
 @Injectable()
@@ -90,6 +87,15 @@ export class CalendarService {
         return new Promise<any>((resolve, reject) => {
             this.afstore
                 .collection(`users/${this.user.getUID()}/event/`)
+                .add(event)
+                .then(res => {}, err => reject(err));
+        });
+    }
+
+    addEventToCalendar(event, CID) {
+        return new Promise<any>((resolve, reject) => {
+            this.afstore
+                .collection(`calendars/${CID}/events/`)
                 .add(event)
                 .then(res => {}, err => reject(err));
         });

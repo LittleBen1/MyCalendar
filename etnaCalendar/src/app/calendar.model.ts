@@ -7,4 +7,5 @@ export class Calendar {
     admins: User[];
     events: Event[];
     checked: false;
+    title: string;
 }

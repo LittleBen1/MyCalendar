@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { NavParams, ModalController, AlertController } from '@ionic/angular';
 import { CalendarService } from '../calendar.service';
 import { UserService } from '../user.service';
+import { Calendar } from '../calendar.model';
 
 @Component({
   selector: 'app-modal',
@@ -17,12 +18,28 @@ export class ModalPage implements OnInit {
   event = null;
   calendar = null;
   users = null;
+  adminCalendars = null;
+  CID: any;
+  personalCalendar = false;
 
   ngOnInit() {
     this.event = this.navParams.get('event');
     if (this.event != null) {
-    this.event.startTime = this.event.startTime.toISOString();
-    this.event.endTime = this.event.endTime.toISOString();    
+      if (this.event.startTime == null || this.event.endTime == null){
+        this.event.startTime = this.event.startTime.toISOString();
+        this.event.endTime = this.event.endTime.toISOString();
+      }
+      this.calendarService.getCalendarForAdmin(this.userService).subscribe(res => {this.adminCalendars = res.map(
+        e => {
+          return {
+            id : e.payload.doc.id,
+            ...e.payload.doc.data()
+          };
+      });
+      console.log(this.adminCalendars);
+    });
+
+    
     }
     this.calendar = this.navParams.get('calendar');
 
@@ -58,8 +75,6 @@ export class ModalPage implements OnInit {
       allDay: false,
       publicEvent: false
     };
-    console.log(eventCopy);
-    console.log(this.userService.getUID());
     if (eventCopy.allDay) {
       const start = eventCopy.startTime;
       const end = eventCopy.endTime;
@@ -83,11 +98,20 @@ export class ModalPage implements OnInit {
 
     // this.loadEvents();
     // this.myCal.loadEvents();
-    this.calendarService.addEvent(eventCopy);
-     this.closeModal();
+    console.log(this.CID);
+    console.log(this.personalCalendar);
+    if (this.personalCalendar)
+      this.calendarService.addEvent(eventCopy);
+    else
+      this.calendarService.addEventToCalendar(eventCopy, this.CID)
+      
+    this.closeModal();
 
-    console.log(eventCopy.startTime);
     //debugger;
+  }
+
+  onChangeHandler(data) {
+    this.CID = data;
   }
 
   sendCalendarData() {
