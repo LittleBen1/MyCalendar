@@ -141,11 +141,10 @@ export class ModalPage implements OnInit {
     this.calendarService.updateCalendar(eventCopy);
   }
 
-  sendData() {
-    if (this.function === "Update")
-      this.updateCalendar();
+  addCalendarToFirestore() {
+    // if (this.function === "Update")
+    //   this.updateCalendar();
     this.calendar.admins.push(this.userService.getUID());
-    debugger;
     this.calendarService.addCalendar(this.calendar);
     this.closeModal();
   }

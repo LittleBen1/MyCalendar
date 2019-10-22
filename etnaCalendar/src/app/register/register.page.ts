@@ -5,6 +5,7 @@ import { AlertController } from '@ionic/angular';
 import { Router } from '@angular/router';
 import { AngularFirestore } from '@angular/fire/firestore';
 import { UserService } from '../user.service';
+import { User } from '../user.model';
 
 @Component({
   selector: 'app-register',
@@ -41,9 +42,9 @@ cpassword = '';
         
       this.user.setUser({
         username,
-        uid: res.user.uid,
-        profilePic: res.user.photoURL
-      });
+        id: res.user.uid,
+      } as User
+      );
       this.showAlert('Success!', 'Welcome aboard');
       this.router.navigate(['/calendar']);
     } catch (error) {

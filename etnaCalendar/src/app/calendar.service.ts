@@ -75,12 +75,16 @@ export class CalendarService {
     }
 
     addCalendar(calendar) {
-        return new Promise<any>((resolve, reject) => {
-            this.afstore
-                .collection('calendars')
-                .add(calendar)
-                .then(res => {}, err => reject(err));
-        });
+        var self = this;
+        this.afstore
+            .collection('calendars')
+            .add(calendar).then(function(docRef) {
+                self.user.addCalendarToUser(docRef);
+                console.log(docRef);
+            })
+            .catch(function(error) {
+                console.error("Error Adding Document: ", error);
+            });
     }
 
     removeCalendar(calendar) {

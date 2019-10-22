@@ -3,6 +3,7 @@ import { AngularFireAuth } from '@angular/fire/auth';
 import { Router } from '@angular/router';
 import { UserService } from '../user.service';
 import { AlertController, ToastController } from '@ionic/angular';
+import { User } from '../user.model';
 
 @Component({
   selector: 'app-login',
@@ -29,9 +30,9 @@ async login() {
     if (res.user) {
       this.user.setUser({
         username,
-        uid: res.user.uid,
-        profilePic: res.user.photoURL
-      });
+        id: res.user.uid
+      } as User
+      );
       this.router.navigate(['/tabs']);
     const toast = await this.toastController.create({
       message: 'Login Successful',

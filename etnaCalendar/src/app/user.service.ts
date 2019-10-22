@@ -2,13 +2,8 @@ import { Injectable } from '@angular/core';
 import { AngularFireAuth } from '@angular/fire/auth';
 import { first } from 'rxjs/operators';
 import { auth } from 'firebase/app';
-import { AngularFirestore } from '@angular/fire/firestore';
-
-interface User {
-    username: string;
-    uid: string;
-    profilePic: string;
-}
+import { AngularFirestore, fromDocRef, DocumentReference } from '@angular/fire/firestore';
+import { User } from './user.model';
 
 @Injectable()
 export class UserService {
@@ -21,6 +16,14 @@ export class UserService {
         this.user = user;
     }
 
+    getFriends() {
+        return this.afStore.collection(`users/${this.user.id}/friends`).snapshotChanges();
+    }
+
+    getCalendars() {
+        return this.afStore.collection(`users/${this.user.id}/calendars`).snapshotChanges();
+    }
+
     async isAuthenticated() {
         if (this.user) { return true; }
 
@@ -29,8 +32,9 @@ export class UserService {
         if (user) {
             this.setUser({
                 username: user.email.split('@')[0],
-                uid: user.uid,
-                profilePic: user.uid
+                id: user.uid,
+                calendars: [],
+                friends: []
             });
             return true;
         }
@@ -41,19 +45,24 @@ export class UserService {
         return this.afStore.collection(`users`).snapshotChanges();
     }
 
-    getProfilePic() {
-        return this.user.profilePic;
-    }
-
     getUserById(id: string) {
         return this.afStore.collection(`users/${id}/`).snapshotChanges();
     }
 
-    addFriend(user) {
+    addFriend(ref: DocumentReference) {
         return new Promise<any>((resolve, reject) => {
             this.afStore
                 .collection(`users/${this.getUID()}/friends`)
-                .add(user)
+                .add(ref)
+                .then(res => {}, err => reject(err));
+        });
+    } 
+
+    addCalendarToFirestore(ref: DocumentReference) {
+        return new Promise<any>((resolve, reject) => {
+            this.afStore
+                .collection(`users/${this.getUID()}/calendars/`)
+                .add({ref: ref})
                 .then(res => {}, err => reject(err));
         });
     } 
@@ -63,6 +72,13 @@ export class UserService {
     }
 
     getUID() {
-        return this.user.uid;
+        return this.user.id;
+    }
+
+    addCalendarToUser(ref: DocumentReference) {
+        this.user.calendars.push(ref.id);
+        this.addCalendarToFirestore(ref);
+        console.log(ref);
+        
     }
 }
