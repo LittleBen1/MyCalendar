@@ -29,6 +29,7 @@ export class CalendarService {
     }
 
     updateCalendarEvent(event) {
+        console.log(event);
         return this.afstore.collection(`users/${this.user.getUID()}/event`)
        .doc(event.EID).set({ title: event.title,
                             desc: event.desc,
@@ -64,6 +65,10 @@ export class CalendarService {
 
     getCalendarForUser(user) {
         return this.afstore.collection(`calendars`, ref => ref.where("users","array-contains",`${this.user.getUID()}`)).snapshotChanges();
+    }
+
+    getUsersOfCalendar(calendarId) {
+        return this.afstore.collection(`calendars/${calendarId}/users`).snapshotChanges();
     }
 
     getAllCalendars() {
@@ -110,6 +115,13 @@ export class CalendarService {
                 .add(event)
                 .then(res => {}, err => reject(err));
         });
+    }
+
+    addUserToCalendar(user, calendarId) {
+        return new Promise<any>((resolve, reject) =>
+        this.afstore.doc(`calendars/${calendarId}/users/${user}`)
+        .set({id: user}, {merge: true})
+        .then(res => {}, err => reject(err)));
     }
 
     removeEvent(event) {

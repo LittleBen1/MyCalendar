@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { PopoverController, NavParams, Events, ModalController } from '@ionic/angular';
 import { ModalPage } from '../modal/modal.page';
+import { UserService } from '../user.service';
+import { CalendarService } from '../calendar.service';
 
 
 const btn = [{
@@ -39,17 +41,44 @@ export class SettingsComponent implements OnInit {
     public: false
   };
 
+  users;
+  currentCalendarId;
+  calendarUsers;
+
   constructor(
     private events: Events,
     private navParams: NavParams,
     private popoverController: PopoverController,
-    private modalController: ModalController) {
+    private modalController: ModalController,
+    private userService: UserService,
+    private calendarService: CalendarService) {
 
   }
 
   ngOnInit() {
     //Get data from popover page
-    this.page = this.navParams.get('data');
+    this.page = this.navParams.get('page');
+    this.currentCalendarId = this.navParams.get('calendarId');
+    console.log(this.page);
+    let tempUsers;
+    
+    if (this.page ==='addUser') {
+        this.userService.getUsers().subscribe(res => { this.users = res});
+     
+      console.log(this.users);
+    }
+  }
+
+  addUser(index) {
+    this.calendarService.addUserToCalendar(this.users[index].payload.doc.id,this.currentCalendarId);
+    if (index !== -1)
+    {
+      this.users.splice(index, 1);
+    }
+  }
+
+  refresh() {
+    this.userService.getUsers().subscribe(res => {this.users = res; console.log(this.users)} );
   }
 
   async addNewCalendar() {

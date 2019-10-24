@@ -25,13 +25,15 @@ export class ModalPage implements OnInit {
 
   ngOnInit() {
     this.event = this.navParams.get('event');
-    
+    this.function = this.navParams.get('function')
+    console.log(this.event);
     if (this.event != null) {
-      if (this.event.startTime == null || this.event.endTime == null){
+      if (this.event.startTime != null && this.event.endTime != null){
         this.event.startTime = this.event.startTime.toISOString();
         this.event.endTime = this.event.endTime.toISOString();
+        console.log(this.event.startTime);
       }
-      if (this.function=this.navParams.get('function'))
+      if (this.function)
         console.log(this.function);
       this.calendarService.getCalendarForAdmin(this.userService).subscribe(res => {this.adminCalendars = res.map(
         e => {
@@ -66,6 +68,7 @@ export class ModalPage implements OnInit {
   updateEventData() {
     this.event.startTime = new Date(this.event.startTime);
     this.event.endTime = new Date(this.event.endTime);
+    console.log(this.event);
     this.calendarService.updateCalendarEvent(this.event);
     this.closeModal();
   }
@@ -118,8 +121,10 @@ export class ModalPage implements OnInit {
       startTime: new Date(this.event.startTime),
       endTime: new Date(this.event.endTime),
       allDay: false,
-      publicEvent: false
+      publicEvent: false,
+      EID: this.event.EID
     };
+    console.log(eventCopy);
     if (eventCopy.allDay) {
       const start = eventCopy.startTime;
       const end = eventCopy.endTime;
@@ -138,7 +143,8 @@ export class ModalPage implements OnInit {
       
       return;
     }
-    this.calendarService.updateCalendar(eventCopy);
+    this.calendarService.updateCalendarEvent(eventCopy);
+    this.closeModal();
   }
 
   addCalendarToFirestore() {
@@ -149,7 +155,12 @@ export class ModalPage implements OnInit {
     this.closeModal();
   }
 
-
+  addOrUpdate() { 
+    if (this.function == "New")
+      this.addEvent();
+    if (this.function == "Update")
+    this.updateEvent();
+  }
 
   addUserToCalendar(user) {
     if (this.calendar == null){

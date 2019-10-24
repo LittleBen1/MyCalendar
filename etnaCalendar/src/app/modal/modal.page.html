@@ -27,7 +27,7 @@
         <ion-label>Public</ion-label>
         <ion-checkbox [(ngModel)] = "event.publicEvent"></ion-checkbox>
       </ion-item> 
-      <ng-template [ngIf]="function == New">
+      <ng-template [ngIf]="function == Update">
       <ion-item>
           <ion-label>add to personal calendar</ion-label>
           <ion-checkbox (click) = "personalCalendar = !personalCalendar"></ion-checkbox>
@@ -49,9 +49,9 @@
         <ion-button expand="half" fill="clear" color="light" (click)="closeModal()">
           Close
         </ion-button>
-        <ion-button expand="half" fill="clear" color="light" (click)="addEvent()">
-          Send Data
-        </ion-button>
+          <ion-button expand="half" fill="clear" color="light" (click)="addOrUpdate()">
+            {{function}} Event
+          </ion-button>
       </ion-toolbar>
     </ion-footer>
   </ion-card>

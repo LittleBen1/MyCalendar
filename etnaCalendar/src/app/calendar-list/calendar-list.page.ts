@@ -3,10 +3,10 @@ import { CalendarService } from '../calendar.service';
 import { UserService } from '../user.service';
 import { map } from 'rxjs/operators';
 import { combineLatest } from 'rxjs';
-import { Calendar } from '../calendar.model';
-import { CalendarPage } from '../calendar/calendar.page'
-import { Router, NavigationExtras } from '@angular/router';
+import { Router } from '@angular/router';
 import { DataService } from '../services/data.service';
+import { SettingsComponent } from '../setting/setting.component';
+import { PopoverController } from '@ionic/angular';
 
 @Component({
   selector: 'app-calendar-list',
@@ -16,7 +16,8 @@ import { DataService } from '../services/data.service';
 export class CalendarListPage implements OnInit {
 
   constructor(public calendarService: CalendarService, public user: UserService,
-              private router: Router, private dataService: DataService) { }
+              private router: Router, private dataService: DataService, 
+              private popoverController: PopoverController) { }
 
   adminCalendars;
   userCalendars;
@@ -25,8 +26,6 @@ export class CalendarListPage implements OnInit {
   calendarSubscribers;
 
   ngOnInit() {
-    
-   
      this.calendarService.getCalendarForAdmin(this.user).subscribe(res => {this.adminCalendars = res.map(
       e => {
         return {
@@ -74,6 +73,14 @@ export class CalendarListPage implements OnInit {
     this.router.navigateByUrl('tabs/calendar');
   }
 
+  async addUser(i){
+      const popover = await this.popoverController.create({
+        component: SettingsComponent,
+        componentProps: { page: 'addUser', calendarId: this.adminCalendars[i].id },
+        cssClass: 'popover_class',
+      });
+      return await popover.present();
+    }
 }
 
 

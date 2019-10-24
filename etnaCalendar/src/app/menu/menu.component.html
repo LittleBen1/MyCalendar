@@ -1,0 +1,12 @@
+<ion-menu>
+  <ion-content>
+    <ion-list>
+      <ion-menu-toggle auto-hide="false" *ngFor="let c of calendars">
+    <ion-item>
+        <ion-label>{{ c.title }}</ion-label>
+        <ion-checkbox [(ngModel)] = "c"></ion-checkbox>
+      </ion-item>
+      </ion-menu-toggle>
+    </ion-list>
+    </ion-content>
+</ion-menu>

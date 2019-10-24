@@ -4,12 +4,13 @@ import { AlertController, ModalController, PopoverController } from '@ionic/angu
 import { formatDate } from '@angular/common';
 import { AngularFirestore } from '@angular/fire/firestore';
 import { UserService } from '../user.service';
-import { firestore } from 'firebase/app';
 import { CalendarService } from '../calendar.service';
 import { ModalPage } from '../modal/modal.page';
 import { SettingsComponent } from '../setting/setting.component';
 import { Router, ActivatedRoute } from '@angular/router';
-import { Event } from '../event.model';
+import { ForecastComponent } from '../weather/forecast/forecast.component';
+import { WeatherService } from '../weather/weather.service';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-calendar',
@@ -18,7 +19,12 @@ import { Event } from '../event.model';
 })
 export class CalendarPage implements OnInit {
 
-  //@Output() change = new EventEmitter();
+
+  loc$: Observable<string>;
+  loc: string;
+  currentWeather: any = <any>{};
+  forecast: any = <any>{};
+  msg: string;
 
   event = {
     title: '',
@@ -60,6 +66,29 @@ export class CalendarPage implements OnInit {
     this.fetchAndDisplayData();
   }
 
+  searchWeather(loc: string) {
+    this.msg = '';
+    this.currentWeather = {};
+    this.weatherService.getCurrentWeather('Paris')
+      .subscribe(res => {
+        this.currentWeather = res;
+      }, err => {
+}, () => {
+        this.searchForecast('Paris');
+      })
+  }
+
+  searchForecast(loc: string) {
+    this.weatherService.getForecast('Paris')
+      .subscribe(res => {
+        this.forecast = res;
+      }, err => {
+})
+  }
+
+  resultFound() {
+    return Object.keys(this.currentWeather).length > 0;
+  }
 
   // getEventList(): firebase.firestore.CollectionReference {
   //   return this.eventListRef;
@@ -105,8 +134,6 @@ export class CalendarPage implements OnInit {
     this.eventSource = [];
     this.loadEvents();
     this.loadCalendars(this.checkedCalendar);
-    console.log(this.checkedCalendar);
-    console.log(this.eventSource);
     this.myCal.loadEvents();
   }
 
@@ -160,7 +187,7 @@ export class CalendarPage implements OnInit {
 
   updateEvent(event) {
     this.openEventModal(event,'Update');
-    this.eventService.updateCalendarEvent(event);
+    //this.eventService.updateCalendarEvent(event);
     this.fetchAndDisplayData();
   }
 
@@ -171,18 +198,18 @@ export class CalendarPage implements OnInit {
     {
       this.eventSource.splice(index, 1);
     }
-    console.log(this.eventSource);
     this.fetchAndDisplayData();
   }
 
   async onEventSelected(event) {
     const start = formatDate(event.startTime, 'medium', this.locale);
     const end = formatDate(event.endTime, 'medium', this.locale);
-
+  
     const alert = await this.alertCtrl.create({
       header: event.title,
       subHeader: event.desc,
-      message: 'From: ' + start + '<br><br>To: ' + end,
+      message: 'From: ' + start + '<br><br>To: ' + end + '<h1 class="center" *ngIf="resultFound()">'+ 
+      this.weatherService.fromWeatherIDtoString(this.currentWeather.weather[0]['id'])+'</h1>',
       buttons: ['Ok',  {
         text: 'Update',
         role: 'update',
@@ -244,6 +271,9 @@ export class CalendarPage implements OnInit {
               public afstore: AngularFirestore,
               public user: UserService, public eventService: CalendarService,
               public modalController: ModalController, private popoverController: PopoverController,
-              private router: Router, public activatedRoute : ActivatedRoute) {
-              }
+              private router: Router, public activatedRoute : ActivatedRoute,
+              private weatherService: WeatherService) {
+      this.searchWeather('Paris');
+    }
+              
 }

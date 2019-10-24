@@ -29,6 +29,9 @@
     <ion-button size="small" fill="clear">
       <ion-icon slot="start" name="repeat"></ion-icon>{{ calendar.users.length }}
     </ion-button>
+    <ion-button size="small" (click)="addUser(i)" fill="clear">
+      <ion-icon slot="start" name="people"></ion-icon>{{ calendar.users.length }}
+    </ion-button>
     <ion-button size="small" fill="clear">
       <ion-checkbox slot="end" [(ngModel)] = "calendar.checked"></ion-checkbox>
     </ion-button>

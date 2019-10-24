@@ -19,13 +19,12 @@ import { HttpClientModule } from '@angular/common/http';
 import { ShareModule } from './share.module';
 import { CalendarService } from './calendar.service';
 import { ModalPageModule } from './modal/modal.module';
-import { WeatherComponent } from './weather/weather.component';
-import { WeatherService } from './weather.service';
+import { WeatherService } from './weather/weather.service';
 import { SettingsComponent } from './setting/setting.component';
 
 
 @NgModule({
-  declarations: [AppComponent, WeatherComponent, SettingsComponent],
+  declarations: [AppComponent, SettingsComponent],
   entryComponents: [SettingsComponent],
   imports: [BrowserModule,
      IonicModule.forRoot(),
